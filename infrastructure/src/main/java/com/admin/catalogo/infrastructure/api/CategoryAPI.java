@@ -1,6 +1,7 @@
 package com.admin.catalogo.infrastructure.api;
 
 import com.admin.catalogo.domain.Pagination.Pagination;
+import com.admin.catalogo.infrastructure.category.models.CreateCategoryApiImput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequestMapping(value = "categories")
 @Tag(name = "Categories")
@@ -24,7 +27,7 @@ public interface CategoryAPI {
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error")
     })
-    ResponseEntity<?> createCategory();
+    ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryApiImput imput);
 
     @GetMapping
     @Operation(summary = "List all categories paginated")
