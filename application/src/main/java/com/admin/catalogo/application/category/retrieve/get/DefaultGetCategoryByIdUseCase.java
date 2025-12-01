@@ -1,8 +1,10 @@
 package com.admin.catalogo.application.category.retrieve.get;
 
+import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
 import com.admin.catalogo.domain.category.CategoryID;
 import com.admin.catalogo.domain.exceptions.DomainException;
+import com.admin.catalogo.domain.exceptions.NotFoundException;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -23,9 +25,10 @@ public class DefaultGetCategoryByIdUseCase extends GetCategoryByIdUseCase {
                 .orElseThrow(notFound(anCatgeoryID));
     }
 
-    private Supplier<DomainException> notFound(final CategoryID anId) {
-        return () ->DomainException.with(
-                new com.admin.catalogo.domain.validation.Error("Category with %s was not found".formatted(anId.getValue()))
+    private Supplier<NotFoundException> notFound(final CategoryID anId) {
+        return () -> NotFoundException.with(
+                Category.class,
+                anId
         );
     }
 }

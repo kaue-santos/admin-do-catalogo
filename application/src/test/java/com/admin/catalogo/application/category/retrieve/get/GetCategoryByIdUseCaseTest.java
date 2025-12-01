@@ -4,6 +4,7 @@ import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
 import com.admin.catalogo.domain.category.CategoryID;
 import com.admin.catalogo.domain.exceptions.DomainException;
+import com.admin.catalogo.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,13 +57,13 @@ public class GetCategoryByIdUseCaseTest {
 
     @Test
     public void givenAInvalidId_whenCallsGetCategory_shouldReturnNotFound(){
-        final var expectedMessage = "Category with 123 was not found";
+        final var expectedMessage = "Category with ID 123 was not found";
         final var expectedId = CategoryID.from("123");
 
         Mockito.when(categoryGateway.findById(Mockito.eq(expectedId)))
                 .thenReturn(Optional.empty());
 
-        final var actualException = Assertions.assertThrows(DomainException.class, () -> useCase.execute(expectedId.getValue()));
+        final var actualException = Assertions.assertThrows(NotFoundException.class, () -> useCase.execute(expectedId.getValue()));
 
         Assertions.assertEquals(expectedMessage, actualException.getMessage());
     }

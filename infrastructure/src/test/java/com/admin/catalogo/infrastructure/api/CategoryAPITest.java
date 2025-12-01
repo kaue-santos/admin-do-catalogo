@@ -8,6 +8,9 @@ import com.admin.catalogo.application.category.retrieve.get.GetCategoryByIdUseCa
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryID;
 import com.admin.catalogo.domain.exceptions.DomainException;
+import com.admin.catalogo.domain.exceptions.NotFoundException;
+import com.admin.catalogo.domain.validation.Error;
+import com.admin.catalogo.domain.validation.handler.Notification;
 import com.admin.catalogo.infrastructure.category.models.CreateCategoryApiImput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.API;
@@ -105,20 +108,86 @@ public class CategoryAPITest {
 
     @Test
     public void givenAInvalidId_whenCallsGetCategory_shouldReturnNotFound() throws Exception {
-        final var expectedMessage = "Category with 123 was not found";
-        final var expectedId = CategoryID.from("123").getValue();
+        final var expectedMessage = "Category with ID 123 was not found";
+        final var expectedId = CategoryID.from("123");
 
         Mockito.when(getCategoryByIdUseCase.execute(Mockito.any()))
-                .thenThrow(DomainException.with(
-                        new com.admin.catalogo.domain.validation.Error("Category with %s was not found".formatted(expectedId))
+                .thenThrow(NotFoundException.with(
+                        Category.class, expectedId
                 ));
 
-        final var request = MockMvcRequestBuilders.get("/categories/{id}", expectedId);
+        final var request = MockMvcRequestBuilders.get("/categories/{id}", expectedId.getValue())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
 
         final var respponse = this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print());
 
         respponse.andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.equalTo(expectedMessage)));
+    }
+
+    @Test
+    public void givenAInvalidName_whenCallsCreateCategory_thenShouldReturnDomainException() throws Exception {
+        String expectedName = null;
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final var aImput = new CreateCategoryApiImput(expectedName, expectedDescription, expectedIsActive);
+
+        Mockito.when(createCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(API.Left(Notification.create(new Error("'name' should not be null"))));
+
+        final var request = MockMvcRequestBuilders.post("/categories")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aImput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isUnprocessableEntity(),
+                        MockMvcResultMatchers.header().string("Location", Matchers.nullValue()),
+                        MockMvcResultMatchers.header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE),
+                        MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(1)),
+                        MockMvcResultMatchers.jsonPath("$.errors[0].message", Matchers.equalTo("'name' should not be null"))
+                );
+
+        Mockito.verify(createCategoryUseCase, Mockito.times(1)).execute(Mockito.argThat( cmd ->
+                Objects.equals(expectedName, cmd.name())
+                        && Objects.equals(expectedDescription, cmd.description())
+                        && Objects.equals(expectedIsActive, cmd.isActive())
+        ));
+    }
+
+    @Test
+    public void givenAInvalidCommand_whenCallsCreateCategory_thenShouldReturnDomainException() throws Exception {
+        String expectedName = null;
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final var aImput = new CreateCategoryApiImput(expectedName, expectedDescription, expectedIsActive);
+
+        Mockito.when(createCategoryUseCase.execute(Mockito.any()))
+                .thenThrow(DomainException.with(new Error("'name' should not be null")));
+
+        final var request = MockMvcRequestBuilders.post("/categories")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aImput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isUnprocessableEntity(),
+                        MockMvcResultMatchers.header().string("Location", Matchers.nullValue()),
+                        MockMvcResultMatchers.header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE),
+                        MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(1)),
+                        MockMvcResultMatchers.jsonPath("$.errors[0].message", Matchers.equalTo("'name' should not be null"))
+                );
+
+        Mockito.verify(createCategoryUseCase, Mockito.times(1)).execute(Mockito.argThat( cmd ->
+                Objects.equals(expectedName, cmd.name())
+                        && Objects.equals(expectedDescription, cmd.description())
+                        && Objects.equals(expectedIsActive, cmd.isActive())
+        ));
     }
 }
