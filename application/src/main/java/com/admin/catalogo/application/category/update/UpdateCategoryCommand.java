@@ -3,7 +3,7 @@ package com.admin.catalogo.application.category.update;
 public record UpdateCategoryCommand (
         String id,
         String name,
-        String Description,
+        String description,
         boolean isActive
 )
 {
