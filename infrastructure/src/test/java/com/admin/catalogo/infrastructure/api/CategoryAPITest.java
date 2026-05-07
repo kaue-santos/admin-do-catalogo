@@ -10,7 +10,7 @@ import com.admin.catalogo.application.category.retrieve.list.CategoryListOutput;
 import com.admin.catalogo.application.category.retrieve.list.ListCategoriesUseCase;
 import com.admin.catalogo.application.category.update.UpdateCategoryOutput;
 import com.admin.catalogo.application.category.update.UpdateCategoryUseCase;
-import com.admin.catalogo.domain.Pagination.Pagination;
+import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryID;
 import com.admin.catalogo.domain.exceptions.DomainException;

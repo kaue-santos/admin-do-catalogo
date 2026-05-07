@@ -1,6 +1,6 @@
 package com.admin.catalogo.infrastructure.api;
 
-import com.admin.catalogo.domain.Pagination.Pagination;
+import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.infrastructure.category.models.CategoryListResponse;
 import com.admin.catalogo.infrastructure.category.models.CategoryResponse;
 import com.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;

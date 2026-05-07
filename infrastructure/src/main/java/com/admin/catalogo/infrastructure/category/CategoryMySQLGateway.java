@@ -1,10 +1,10 @@
 package com.admin.catalogo.infrastructure.category;
 
-import com.admin.catalogo.domain.Pagination.Pagination;
+import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
 import com.admin.catalogo.domain.category.CategoryID;
-import com.admin.catalogo.domain.category.CategorySearchQuery;
+import com.admin.catalogo.domain.pagination.SearchQuery;
 import com.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import com.admin.catalogo.infrastructure.utils.SpecificationUtils;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.*;
 import java.util.Optional;
 
 @Service
@@ -54,7 +53,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
     }
 
     @Override
-    public Pagination<Category> findAll(final CategorySearchQuery aQuery) {
+    public Pagination<Category> findAll(final SearchQuery aQuery) {
 
         final var page = PageRequest.of(
                 aQuery.page(),

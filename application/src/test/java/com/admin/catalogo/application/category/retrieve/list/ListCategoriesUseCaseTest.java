@@ -1,9 +1,9 @@
 package com.admin.catalogo.application.category.retrieve.list;
 
-import com.admin.catalogo.domain.Pagination.Pagination;
+import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
-import com.admin.catalogo.domain.category.CategorySearchQuery;
+import com.admin.catalogo.domain.pagination.SearchQuery;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class ListCategoriesUseCaseTest {
         final var expectedSort = "createdAt";
         final var expectedDirection = "asc";
 
-        final var aQuery = new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+        final var aQuery = new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         final var expectedPagination = new Pagination<>(expectedPage, expectedPerPage, categories.size(), categories);
 
@@ -72,7 +72,7 @@ public class ListCategoriesUseCaseTest {
         final var expectedSort = "createdAt";
         final var expectedDirection = "asc";
 
-        final var aQuery = new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+        final var aQuery = new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         final var expectedPagination = new Pagination<>(expectedPage, expectedPerPage, categories.size(), categories);
 
@@ -101,7 +101,7 @@ public class ListCategoriesUseCaseTest {
         final var expectedDirection = "asc";
         final var expectedErrorMessage = "Gateway Error";
 
-        final var aQuery = new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+        final var aQuery = new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         Mockito.when(categoryGateway.findAll(Mockito.eq(aQuery)))
                 .thenThrow(new IllegalStateException(expectedErrorMessage));

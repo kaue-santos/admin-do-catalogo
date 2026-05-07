@@ -2,7 +2,7 @@ package com.admin.catalogo.infrastructure.category;
 
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryID;
-import com.admin.catalogo.domain.category.CategorySearchQuery;
+import com.admin.catalogo.domain.pagination.SearchQuery;
 import com.admin.catalogo.MySQLGatewayTest;
 import com.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
@@ -191,7 +191,7 @@ public class CategoryMySQLGatewayTest {
 
         Assertions.assertEquals(3, categoryRepository.count());
 
-        final var query = new CategorySearchQuery(0, 1, null, "name", "asc");
+        final var query = new SearchQuery(0, 1, null, "name", "asc");
         final var actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -209,7 +209,7 @@ public class CategoryMySQLGatewayTest {
 
         Assertions.assertEquals(0, categoryRepository.count());
 
-        final var query = new CategorySearchQuery(0, 1, null, "name", "asc");
+        final var query = new SearchQuery(0, 1, null, "name", "asc");
         final var actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -238,7 +238,7 @@ public class CategoryMySQLGatewayTest {
 
         Assertions.assertEquals(3, categoryRepository.count());
 
-        var query = new CategorySearchQuery(0, 1, null, "name", "asc");
+        var query = new SearchQuery(0, 1, null, "name", "asc");
         var actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -248,7 +248,7 @@ public class CategoryMySQLGatewayTest {
         Assertions.assertEquals(documentarios.getId(), actualResult.items().get(0).getId());
 
         expectedPage = 1;
-        query = new CategorySearchQuery(1, 1, null, "name", "asc");
+        query = new SearchQuery(1, 1, null, "name", "asc");
         actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -258,7 +258,7 @@ public class CategoryMySQLGatewayTest {
         Assertions.assertEquals(filmes.getId(), actualResult.items().get(0).getId());
 
         expectedPage = 2;
-        query = new CategorySearchQuery(2, 1, null, "name", "asc");
+        query = new SearchQuery(2, 1, null, "name", "asc");
         actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -288,7 +288,7 @@ public class CategoryMySQLGatewayTest {
 
         Assertions.assertEquals(3, categoryRepository.count());
 
-        final var query = new CategorySearchQuery(0, 1, "doc", "name", "asc");
+        final var query = new SearchQuery(0, 1, "doc", "name", "asc");
         final var actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
@@ -318,7 +318,7 @@ public class CategoryMySQLGatewayTest {
 
         Assertions.assertEquals(3, categoryRepository.count());
 
-        final var query = new CategorySearchQuery(0, 1, "MAIS ASSISTIDA", "description", "asc");
+        final var query = new SearchQuery(0, 1, "MAIS ASSISTIDA", "description", "asc");
         final var actualResult = categoryGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, actualResult.currentPage());
