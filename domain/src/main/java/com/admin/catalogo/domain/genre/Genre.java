@@ -14,11 +14,6 @@ import java.util.List;
 
 public class Genre extends AggregateRoot<GenreID> {
 
-    @Override
-    public void validate(final ValidationHandler handler) {
-        new GenreValidator(this, handler).validate();
-    }
-
     private String name;
     private boolean active;
     private List<CategoryID> categories;
@@ -42,12 +37,7 @@ public class Genre extends AggregateRoot<GenreID> {
         this.updatedAt = aUpdatedAt;
         this.deletedAt= aDeletedAt;
 
-        final var notification = Notification.create();
-        validate(notification);
-
-        if (notification.hasError()) {
-            throw new NotificationException("Failed to validate Aggregate Genre", notification);
-        }
+        selfValidate();
     }
 
     public static Genre newGenre(final String aName, final boolean isActive)
@@ -83,6 +73,40 @@ public class Genre extends AggregateRoot<GenreID> {
         );
     }
 
+    @Override
+    public void validate(final ValidationHandler handler) {
+        new GenreValidator(this, handler).validate();
+    }
+
+    public Genre update(final String aName, final boolean isActive, final List<CategoryID> categories){
+        this.name = aName;
+        if (isActive) {
+            activate();
+        } else {
+            deactivate();
+        }
+        this.categories = new ArrayList<>(categories != null ? categories : Collections.emptyList());
+        this.updatedAt = InstantUtils.now();
+        selfValidate();
+        return this;
+    }
+
+    public Genre deactivate() {
+        if (getDeletedAt() == null) {
+            this.deletedAt = InstantUtils.now();
+        }
+        this.active = false;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
+    public Genre activate() {
+        this.deletedAt = null;
+        this.active = true;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -107,19 +131,30 @@ public class Genre extends AggregateRoot<GenreID> {
         return active;
     }
 
-    public Genre deactivate() {
-        if (getDeletedAt() == null) {
-            this.deletedAt = InstantUtils.now();
+    private void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError()) {
+            throw new NotificationException("Failed to validate Aggregate Genre", notification);
         }
-        this.active = false;
-        this.updatedAt = InstantUtils.now();
+    }
+
+    public Genre addCatgeory(final CategoryID aCategoryID) {
+        if (aCategoryID == null) {
+            return this;
+        }
+        this.categories.add(aCategoryID);
+        this.updatedAt =InstantUtils.now();
         return this;
     }
 
-    public Genre activate() {
-        this.deletedAt = null;
-        this.active = true;
-        this.updatedAt = InstantUtils.now();
+    public Genre removeCategory(final CategoryID aCategoryID) {
+        if (aCategoryID == null) {
+            return this;
+        }
+        this.categories.remove(aCategoryID);
+        this.updatedAt =InstantUtils.now();
         return this;
     }
 }
