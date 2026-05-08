@@ -5,7 +5,6 @@ import com.admin.catalogo.domain.category.CategoryID;
 import com.admin.catalogo.domain.exceptions.NotificationException;
 import com.admin.catalogo.domain.genre.Genre;
 import com.admin.catalogo.domain.genre.GenreGateway;
-import com.admin.catalogo.domain.genre.GenreID;
 import com.admin.catalogo.domain.validation.Error;
 import com.admin.catalogo.domain.validation.ValidationHandler;
 import com.admin.catalogo.domain.validation.handler.Notification;
@@ -41,6 +40,8 @@ public class DefaultCreateGenreUseCase extends CreateGenreUseCase {
         if (notification.hasError()) {
             throw new NotificationException("Could not Aggregate Genre", notification);
         }
+
+        aGenre.addCategories(categories);
 
         return CreateGenreOutput.from(this.genreGateway.create(aGenre));
     }
