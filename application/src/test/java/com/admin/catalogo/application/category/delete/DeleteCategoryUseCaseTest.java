@@ -1,19 +1,18 @@
 package com.admin.catalogo.application.category.delete;
 
+import com.admin.catalogo.application.UseCaseTest;
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
 import com.admin.catalogo.domain.category.CategoryID;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
-public class DeleteCategoryUseCaseTest {
+import java.util.List;
+
+public class DeleteCategoryUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultDeleteCategoryUseCase useCase;
@@ -21,14 +20,13 @@ public class DeleteCategoryUseCaseTest {
     @Mock
     private CategoryGateway categoryGateway;
 
-    @BeforeEach
-    void cleanUp()
-    {
-        Mockito.reset(categoryGateway);
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(categoryGateway);
     }
 
     @Test
-    public void givenAValidId_whenCallsDeleteCategory_shouldOk(){
+    public void givenAValidId_whenCallsDeleteCategory_shouldOk() {
         final var aCategory = Category.newCategory("Filmes", "A categoria", true);
         final var expectedId = aCategory.getId();
 
@@ -40,7 +38,7 @@ public class DeleteCategoryUseCaseTest {
     }
 
     @Test
-    public void givenAInvalidCategory_whenCallsDeleteCategory_shouldOk(){
+    public void givenAInvalidCategory_whenCallsDeleteCategory_shouldOk() {
         final var expectedId = CategoryID.from("123");
 
         Mockito.doNothing().when(categoryGateway).deleteById(Mockito.eq(expectedId));
@@ -51,13 +49,12 @@ public class DeleteCategoryUseCaseTest {
     }
 
     @Test
-    public void givenAValidCategory_whenGatewayThrowsException_shouldReturnException(){
+    public void givenAValidCategory_whenGatewayThrowsException_shouldReturnException() {
 
         final var aCategory = Category.newCategory("Filmes", "A categoria", true);
         final var expectedId = aCategory.getId();
 
-        Mockito.doThrow(new IllegalStateException("Gateway error"))
-                .when(categoryGateway).deleteById(Mockito.eq(expectedId));
+        Mockito.doThrow(new IllegalStateException("Gateway error")).when(categoryGateway).deleteById(Mockito.eq(expectedId));
 
         Assertions.assertThrows(IllegalStateException.class, () -> useCase.execute(expectedId.getValue()));
 

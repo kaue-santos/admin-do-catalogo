@@ -1,26 +1,23 @@
 package com.admin.catalogo.application.category.update;
 
+import com.admin.catalogo.application.UseCaseTest;
 import com.admin.catalogo.domain.category.Category;
 import com.admin.catalogo.domain.category.CategoryGateway;
 import com.admin.catalogo.domain.category.CategoryID;
-import com.admin.catalogo.domain.exceptions.DomainException;
 import com.admin.catalogo.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 
-@ExtendWith(MockitoExtension.class)
-public class UpdateCategoryUseCaseTest {
+public class UpdateCategoryUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultUpdateCategoryUseCase useCase;
@@ -28,15 +25,13 @@ public class UpdateCategoryUseCaseTest {
     @Mock
     private CategoryGateway categoryGateway;
 
-    @BeforeEach
-    void cleanUp()
-    {
-        Mockito.reset(categoryGateway);
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(categoryGateway);
     }
 
     @Test
-    public void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId()
-    {
+    public void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId() {
         final var aCategory = Category.newCategory("Fiml", null, true);
 
         final var expectedName = "Filmes";
@@ -77,8 +72,7 @@ public class UpdateCategoryUseCaseTest {
     }
 
     @Test
-    public void givenAInvalidName_whenCallsUpdateCategory_thenShouldReturnDomainException()
-    {
+    public void givenAInvalidName_whenCallsUpdateCategory_thenShouldReturnDomainException() {
         final var aCategory = Category.newCategory("Fiml", null, true);
 
         final String expectedName = null;
@@ -86,7 +80,7 @@ public class UpdateCategoryUseCaseTest {
         final var expectedIsActive = true;
         final var expectedId = aCategory.getId();
 
-        final var expectedErrorMessage= "'name' should not be null";
+        final var expectedErrorMessage = "'name' should not be null";
         final var expectedErrorCount = 1;
 
 
@@ -105,8 +99,7 @@ public class UpdateCategoryUseCaseTest {
     }
 
     @Test
-    public void givenAValidInactivateCommand_whenCallsUpdateCategory_shouldReturnInactiveCategoryId()
-    {
+    public void givenAValidInactivateCommand_whenCallsUpdateCategory_shouldReturnInactiveCategoryId() {
         final var aCategory = Category.newCategory("Fiml", null, true);
 
         final var expectedName = "Filmes";
@@ -150,8 +143,7 @@ public class UpdateCategoryUseCaseTest {
     }
 
     @Test
-    public void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException()
-    {
+    public void givenAValidCommand_whenGatewayThrowsRandomException_shouldReturnAException() {
         final var aCategory = Category.newCategory("Fiml", null, true);
 
         final var expectedName = "Filmes";
@@ -194,8 +186,7 @@ public class UpdateCategoryUseCaseTest {
     }
 
     @Test
-    public void givenACommandWithInvalidID_whenCallsUpdateCategory_shouldReturnNotFoundException()
-    {
+    public void givenACommandWithInvalidID_whenCallsUpdateCategory_shouldReturnNotFoundException() {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
@@ -213,7 +204,7 @@ public class UpdateCategoryUseCaseTest {
                 .thenReturn(Optional.empty());
 
         final var actualException =
-        Assertions.assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
+                Assertions.assertThrows(NotFoundException.class, () -> useCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
 
