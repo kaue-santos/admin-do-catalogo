@@ -1,7 +1,6 @@
 package com.admin.catalogo.application.genre.delete;
 
 import com.admin.catalogo.application.UseCaseTest;
-import com.admin.catalogo.application.delete.DefaultDeleteGenreUseCase;
 import com.admin.catalogo.domain.genre.Genre;
 import com.admin.catalogo.domain.genre.GenreGateway;
 import com.admin.catalogo.domain.genre.GenreID;
