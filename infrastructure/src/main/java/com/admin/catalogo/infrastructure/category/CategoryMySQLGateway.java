@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 public class CategoryMySQLGateway implements CategoryGateway {
@@ -65,11 +66,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
         final var specifications = Optional.ofNullable(aQuery.terms())
                 .filter(str -> !str.isEmpty())
-                .map(str -> SpecificationUtils
-                        .<CategoryJpaEntity>like("name", str)
-                        .or(SpecificationUtils.
-                                <CategoryJpaEntity>like("description", str))
-                )
+                .map(this::assembleSpecification)
                 .orElse(null);
 
         final var pageResult = this.repository.findAll(Specification.where(specifications), page);
@@ -86,5 +83,11 @@ public class CategoryMySQLGateway implements CategoryGateway {
     public List<CategoryID> existsByIds(final Iterable<CategoryID> ids) {
         //TODO implementar quando chegar na infrastructure de Genre
         return Collections.emptyList();
+    }
+
+    private Specification<CategoryJpaEntity> assembleSpecification(final String str){
+        final Specification<CategoryJpaEntity> nameLike = SpecificationUtils.like("name", str);
+        final Specification<CategoryJpaEntity> descriptionLike = SpecificationUtils.like("description", str);
+        return nameLike.or(descriptionLike);
     }
 }

@@ -7,6 +7,10 @@ import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.domain.pagination.SearchQuery;
 import com.admin.catalogo.infrastructure.genre.persistence.GenreJpaEntity;
 import com.admin.catalogo.infrastructure.genre.persistence.GenreRepository;
+import com.admin.catalogo.infrastructure.utils.SpecificationUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -26,7 +30,7 @@ public class GenreMySQLGateway implements GenreGateway {
         return save(aGenre);
     }
 
-    private Genre save(Genre aGenre) {
+    private Genre save(final Genre aGenre) {
         return this.genreRepository.save(GenreJpaEntity.from(aGenre))
                 .toAggregate();
     }
@@ -40,8 +44,10 @@ public class GenreMySQLGateway implements GenreGateway {
     }
 
     @Override
-    public Optional<Genre> findById(GenreID genreID) {
-        return Optional.empty();
+    public Optional<Genre> findById(final GenreID genreID) {
+
+        return this.genreRepository.findById(genreID.getValue())
+                .map(GenreJpaEntity::toAggregate);
     }
 
     @Override
@@ -50,7 +56,29 @@ public class GenreMySQLGateway implements GenreGateway {
     }
 
     @Override
-    public Pagination<Genre> findAll(SearchQuery aQuery) {
-        return null;
+    public Pagination<Genre> findAll(final SearchQuery aQuery) {
+        final var page = PageRequest.of(
+                aQuery.page(),
+                aQuery.perPage(),
+                Sort.by(Sort.Direction.fromString(aQuery.direction()), aQuery.sort())
+        );
+
+        final var where = Optional.ofNullable(aQuery.terms())
+                .filter(str -> !str.isBlank())
+                .map(this::assembleSpecification)
+                .orElse(null);
+
+        final var pageResult = this.genreRepository.findAll(Specification.where(where), page);
+
+        return new Pagination<>(
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.map(GenreJpaEntity::toAggregate).toList()
+        );
+    }
+
+    private Specification<GenreJpaEntity> assembleSpecification(final String terms) {
+        return SpecificationUtils.like("name", terms);
     }
 }
