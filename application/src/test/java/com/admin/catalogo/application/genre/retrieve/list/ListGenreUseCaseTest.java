@@ -1,4 +1,4 @@
-package com.admin.catalogo.application.retrieve.list;
+package com.admin.catalogo.application.genre.retrieve.list;
 
 import com.admin.catalogo.application.UseCaseTest;
 import com.admin.catalogo.application.genre.retrieve.list.DefaultListGenreUseCase;
