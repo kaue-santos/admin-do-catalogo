@@ -59,7 +59,7 @@ public class GenreApiTest {
         aResponse.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().string("Location", "/genres/" + expectedId))
                 .andExpect(MockMvcResultMatchers.header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._id", Matchers.equalTo(expectedId))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.equalTo(expectedId))
                 );
 
         Mockito.verify(createGenreUseCase).execute(Mockito.argThat(cmd ->
@@ -71,7 +71,7 @@ public class GenreApiTest {
 
     @Test
     public void givenInvalidName_whenCallsCreateGenre_shouldReturnNotification() throws Exception {
-//given
+        //given
         final String expectedName = null;
         final var expectedCategries = List.of("123", "456");
         final var expectedActive = true;
