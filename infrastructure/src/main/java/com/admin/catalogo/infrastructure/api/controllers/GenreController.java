@@ -2,12 +2,16 @@ package com.admin.catalogo.infrastructure.api.controllers;
 
 import com.admin.catalogo.application.genre.create.CreateGenreCommand;
 import com.admin.catalogo.application.genre.create.CreateGenreUseCase;
+import com.admin.catalogo.application.genre.retrieve.get.GetGenreByIdUseCase;
+import com.admin.catalogo.application.genre.update.UpdateGenreCommand;
+import com.admin.catalogo.application.genre.update.UpdateGenreUseCase;
 import com.admin.catalogo.domain.pagination.Pagination;
 import com.admin.catalogo.infrastructure.api.GenreAPI;
 import com.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
 import com.admin.catalogo.infrastructure.genre.models.GenreListResponse;
 import com.admin.catalogo.infrastructure.genre.models.GenreResponse;
 import com.admin.catalogo.infrastructure.genre.models.UpdateGenreRequest;
+import com.admin.catalogo.infrastructure.genre.presenters.GenreApiPresenter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,8 +22,16 @@ public class GenreController implements GenreAPI {
 
     private final CreateGenreUseCase createGenreUseCase;
 
-    public GenreController(final CreateGenreUseCase createGenreUseCase) {
+    private final GetGenreByIdUseCase getGenreByIdUseCase;
+
+    private final UpdateGenreUseCase updateGenreUseCase;
+
+    public GenreController(final CreateGenreUseCase createGenreUseCase,
+                           final GetGenreByIdUseCase getGenreByIdUseCase,
+                           final UpdateGenreUseCase updateGenreUseCase) {
         this.createGenreUseCase = createGenreUseCase;
+        this.getGenreByIdUseCase = getGenreByIdUseCase;
+        this.updateGenreUseCase = updateGenreUseCase;
     }
 
     @Override
@@ -48,12 +60,22 @@ public class GenreController implements GenreAPI {
 
     @Override
     public GenreResponse getById(final String id) {
-        return null;
+        return GenreApiPresenter.present(this.getGenreByIdUseCase.execute(id));
     }
 
     @Override
-    public ResponseEntity<?> updatedById(final String is, final UpdateGenreRequest body) {
-        return null;
+    public ResponseEntity<?> updatedById(final String id, final UpdateGenreRequest input) {
+
+        final var aCommand = UpdateGenreCommand.with(
+                id,
+                input.name(),
+                input.isActive(),
+                input.categories()
+        );
+
+        final var output = this.updateGenreUseCase.execute(aCommand);
+
+        return ResponseEntity.ok(output);
     }
 
     @Override
