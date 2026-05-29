@@ -8,6 +8,8 @@ import com.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;
 import com.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
 import com.admin.catalogo.infrastructure.configuration.json.Json;
 import com.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
+import com.admin.catalogo.infrastructure.genre.models.GenreResponse;
+import com.admin.catalogo.infrastructure.genre.models.UpdateGenreRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -64,6 +66,10 @@ public interface MockDsl {
         return this.update("/categories/", anId, aRequestBody);
     }
 
+    default ResultActions deleteAGenre(final Identifier anId) throws Exception {
+        return this.delete("/genres/", anId);
+    }
+
     default GenreID givenAGenre(final String aName, final List<CategoryID> aCategories, final boolean isActive) throws Exception {
         final var aRequestBody = new CreateGenreRequest(aName, mapTo(aCategories, CategoryID::getValue), isActive);
         final var actualId = this.given("/genres", aRequestBody);
@@ -107,6 +113,14 @@ public interface MockDsl {
                 sort,
                 dir
         );
+    }
+
+    default GenreResponse retrieveAGenre(final Identifier anId) throws Exception {
+        return this.retrieve("/genres/", anId, GenreResponse.class);
+    }
+
+    default ResultActions updateAGenre(final Identifier anId, final UpdateGenreRequest aRequestBody) throws Exception {
+        return this.update("/genres/", anId, aRequestBody);
     }
 
     default <A, D> List<D> mapTo(final List<A> actual, final Function<A, D> mapper) {
