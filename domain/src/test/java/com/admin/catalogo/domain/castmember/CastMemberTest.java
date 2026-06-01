@@ -95,4 +95,129 @@ public class CastMemberTest {
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
     }
+
+    @Test
+    public void givenAValidCastMember_whenCallUpdate_shouldReceiveUpdated(){
+        final var expectedName = "Vin Diesel";
+        final var expectedType = CastMemberType.ACTOR;
+
+        final var actualMember =
+                CastMember.newMember("vind", CastMemberType.DIRECTOR);
+
+        Assertions.assertNotNull(actualMember);
+        Assertions.assertNotNull(actualMember.getId());
+
+        final var actualId = actualMember.getId();
+        final var actualCreatedAt = actualMember.getCreatedAt();
+        final var actualUpdatedAt = actualMember.getUpdatedAt();
+
+        actualMember.update(expectedName, expectedType);
+
+        Assertions.assertEquals(actualId, actualMember.getId());
+        Assertions.assertEquals(expectedName, actualMember.getName());
+        Assertions.assertEquals(expectedType, actualMember.getType());
+        Assertions.assertEquals(actualCreatedAt, actualMember.getCreatedAt());
+        Assertions.assertTrue(actualUpdatedAt.isBefore(actualMember.getUpdatedAt()));
+    }
+
+    @Test
+    public void givenAValidCastMember_whenCallUpdateWithInvalidNullName_shouldReceiveNotification(){
+        final String expectedName = null;
+        final var expectedType = CastMemberType.ACTOR;
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'name' should not be null";
+
+        final var actualMember =
+                CastMember.newMember("vind", CastMemberType.DIRECTOR);
+
+        Assertions.assertNotNull(actualMember);
+        Assertions.assertNotNull(actualMember.getId());
+
+
+        final var actualException = Assertions.assertThrows(
+                NotificationException.class,
+                () -> actualMember.update(expectedName, expectedType)
+        );
+
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+    }
+
+    @Test
+    public void givenAValidCastMember_whenCallUpdateWithInvalidEmptyName_shouldReceiveNotification(){
+        final var expectedName = "";
+        final var expectedType = CastMemberType.ACTOR;
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'name' should not be empty";
+
+        final var actualMember =
+                CastMember.newMember("vind", CastMemberType.DIRECTOR);
+
+        Assertions.assertNotNull(actualMember);
+        Assertions.assertNotNull(actualMember.getId());
+
+
+        final var actualException = Assertions.assertThrows(
+                NotificationException.class,
+                () -> actualMember.update(expectedName, expectedType)
+        );
+
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+    }
+
+    @Test
+    public void givenAValidCastMember_whenCallUpdateWithLengthMoreThan255_shouldReceiveNotification(){
+        final var expectedName = """
+                O incentivo ao avanço tecnológico, assim como a valorização de fatores subjetivos desafia a capacidade 
+                de equalização do sistema de formação de quadros que corresponde às necessidades.
+                O incentivo ao avanço tecnológico, assim como a valorização de fatores subjetivos desafia a capacidade 
+                de equalização do sistema de formação de quadros que corresponde às necessidades.
+                """;
+        final var expectedType = CastMemberType.ACTOR;
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage =  "'name' must be between 3 and 255 characters";
+
+        final var actualMember =
+                CastMember.newMember("vind", CastMemberType.DIRECTOR);
+
+        Assertions.assertNotNull(actualMember);
+        Assertions.assertNotNull(actualMember.getId());
+
+
+        final var actualException = Assertions.assertThrows(
+                NotificationException.class,
+                () -> actualMember.update(expectedName, expectedType)
+        );
+
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+    }
+
+    @Test
+    public void givenAValidCastMember_whenCallUpdateWithInvalidNullType_shouldReceiveNotification(){
+        final var expectedName = "Vin Diesel";
+        final CastMemberType expectedType = null;
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'type' should not be null";
+
+        final var actualMember =
+                CastMember.newMember("vind", CastMemberType.DIRECTOR);
+
+        Assertions.assertNotNull(actualMember);
+        Assertions.assertNotNull(actualMember.getId());
+
+
+        final var actualException = Assertions.assertThrows(
+                NotificationException.class,
+                () -> actualMember.update(expectedName, expectedType)
+        );
+
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+    }
 }
