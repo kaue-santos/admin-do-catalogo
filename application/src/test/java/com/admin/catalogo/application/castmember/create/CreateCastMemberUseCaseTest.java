@@ -3,6 +3,8 @@ package com.admin.catalogo.application.castmember.create;
 import com.admin.catalogo.application.Fixture;
 import com.admin.catalogo.application.UseCaseTest;
 import com.admin.catalogo.domain.castmember.CastMemberGateway;
+import com.admin.catalogo.domain.castmember.CastMemberType;
+import com.admin.catalogo.domain.exceptions.NotificationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,7 +35,7 @@ public class CreateCastMemberUseCaseTest extends UseCaseTest {
         final var expectedName = Fixture.name();
         final var expectedType = Fixture.CastMember.type();
 
-        final var aCommand = new CreateCastMemberCommand.with(
+        final var aCommand = CreateCastMemberCommand.with(
                 expectedName,
                 expectedType
         );
@@ -55,6 +57,61 @@ public class CreateCastMemberUseCaseTest extends UseCaseTest {
                         && Objects.nonNull(aMember.getCreatedAt())
                         && Objects.nonNull(aMember.getUpdatedAt())
         ));
-
     }
+
+    @Test
+    public  void givenAInvalidName_whenCallsCreateCastMember_shouldThrowsNotificationException(){
+        //given
+        final String expectedName = null;
+        final var expectedType = Fixture.CastMember.type();
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'name' should not be null";
+
+        final var aCommand = CreateCastMemberCommand.with(
+                expectedName,
+                expectedType
+        );
+
+        //when
+        final var actualException = Assertions.assertThrows(NotificationException.class,() ->
+                useCase.execute(aCommand)
+        );
+
+        //then
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        Mockito.verify(castMemberGateway, Mockito.times(0)).create(Mockito.any());
+    }
+
+    @Test
+    public  void givenAInvalidType_whenCallsCreateCastMember_shouldThrowsNotificationException(){
+        //given
+        final var expectedName = Fixture.name();
+        final CastMemberType expectedType = null;
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = "'type' should not be null";
+
+        final var aCommand = CreateCastMemberCommand.with(
+                expectedName,
+                expectedType
+        );
+
+        //when
+        final var actualException = Assertions.assertThrows(NotificationException.class,() ->
+                useCase.execute(aCommand)
+        );
+
+        //then
+        Assertions.assertNotNull(actualException);
+        Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
+
+        Mockito.verify(castMemberGateway, Mockito.times(0)).create(Mockito.any());
+    }
+
+
 }
